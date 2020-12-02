@@ -22,7 +22,7 @@ func main() {
 	pwInfos := getPwInfos(lines)
 	count := 0
 	for _, pwInfo := range pwInfos {
-		if pwInfoIsCompliantPart2(pwInfo) {
+		if pwInfoIsCompliantPart1(pwInfo) {
 			count++
 		}
 	}
@@ -34,6 +34,7 @@ func main() {
 			count++
 		}
 	}
+	fmt.Printf("Part 2: Compliant password count: %d\n", count)
 }
 
 func getPwInfos(lines []string) []passwordInfo {
