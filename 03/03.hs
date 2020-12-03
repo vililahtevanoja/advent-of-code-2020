@@ -9,7 +9,7 @@ main = do
   let rowLen = length (head inputs)
   let depth = length inputs
   let treeIndices = getTreeIndices inputs
-  let slopes = [(Slope 3 1), Slope 1 1, (Slope 5 1), (Slope 7 1), (Slope 1 2)]
+  let slopes = [Slope 3 1, Slope 1 1, Slope 5 1, Slope 7 1, Slope 1 2]
   let steps = generateSteps (depth-1) (head slopes)
   let treesHit = length (filter (uncurry (hitTree treeIndices rowLen)) steps)
   putStrLn ("Part 1 trees hit: " ++ show treesHit)
