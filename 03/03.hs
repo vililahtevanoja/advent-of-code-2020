@@ -3,11 +3,6 @@ tree = '#'
 
 data Slope = Slope { right::Int, down::Int } deriving (Show)
 
--- {right: 1, down: 1},
--- 		{right: 3, down: 1},
--- 		{right: 5, down: 1},
--- 		{right: 7, down: 1},
--- 		{right: 1, down: 2}}
 main :: IO ()
 main = do
   inputs <- lines <$> readFile "input.txt"
@@ -27,10 +22,6 @@ main = do
 
 generateSteps :: Int -> Slope -> [(Int, Int)]
 generateSteps depth slope = do
-  -- [(row, col) |
-  --     col <- [0, (right slope) .. ],
-  --    row <- [0, (down slope) .. depth],
-  --    row < depth]
   let rows = [0, (down slope) .. depth]
   let columns = [0,(right slope)..depth * (right slope)]
   zip rows columns
