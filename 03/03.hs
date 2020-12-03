@@ -9,13 +9,13 @@ main = do
   let rowLen = length (head inputs)
   let depth = length inputs
   let treeIndices = getTreeIndices inputs
-  let slopes = [(Slope 3 1), (Slope 1 1), (Slope 5 1), (Slope 7 1), (Slope 1 2)]
+  let slopes = [(Slope 3 1), Slope 1 1, (Slope 5 1), (Slope 7 1), (Slope 1 2)]
   let steps = generateSteps (depth-1) (head slopes)
-  let treesHit = length (filter (\(r, c) -> hitTree treeIndices rowLen r c) steps)
+  let treesHit = length (filter (uncurry (hitTree treeIndices rowLen)) steps)
   putStrLn ("Part 1 trees hit: " ++ show treesHit)
 
   let stepss = map (generateSteps (depth-1)) slopes
-  let treesHitPerSlope = map (\steps -> length (filter (\(r, c) -> hitTree treeIndices rowLen r c) steps)) stepss
+  let treesHitPerSlope = map (length . filter (uncurry (hitTree treeIndices rowLen))) stepss
   let treesHitProduct = product treesHitPerSlope
   putStrLn ("Part 2 product of trees hit: " ++ show treesHitProduct)
 
@@ -23,7 +23,7 @@ main = do
 generateSteps :: Int -> Slope -> [(Int, Int)]
 generateSteps depth slope = do
   let rows = [0, (down slope) .. depth]
-  let columns = [0,(right slope)..depth * (right slope)]
+  let columns = [0,(right slope)..depth * right slope]
   zip rows columns
 
 getTreeIndices :: [String] -> [[Int]]
