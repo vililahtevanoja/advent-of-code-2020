@@ -6,8 +6,6 @@ required :: [String]
 required =  sort ["byr", "iyr", "eyr", "hgt","hcl","ecl","pid"]
 notRequired = "cid"
 
-checkComplianceTuple (k,v) = checkCompliance k v
-
 checkCompliance :: String -> String -> Bool
 checkCompliance "byr" s = case (readMaybe s :: Maybe Int) of
                             Just n  -> n >= 1920 && n <= 2002
@@ -68,5 +66,5 @@ main = do
     let sortedByKeys = map sort entriesKeyValues
     let p1Compliant = filter (\kvs -> map fst kvs ==required) sortedByKeys
     putStrLn $ "Part 1 compliant count: " ++ show (length p1Compliant) ++ " "
-    let p2Compliant = filter (all checkComplianceTuple) p1Compliant
+    let p2Compliant = filter (all (uncurry checkCompliance)) p1Compliant
     putStrLn $ "Part 2 compliant count: " ++ show (length p2Compliant)
