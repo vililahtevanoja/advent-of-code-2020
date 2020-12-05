@@ -31,37 +31,37 @@ checkCompliance "pid" s = length ( filter isDigit s) == 9
 checkCompliance "cid" _ = True -- ignore
 checkCompliance k s = error ("Weird values: " ++ k ++ ":" ++ s)
 
-isPrefixOf :: String -> String -> Bool
-isPrefixOf "" _ = True
-isPrefixOf _ "" = False
+isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
+isPrefixOf [] _ = True
+isPrefixOf _ [] = False
 isPrefixOf (c1:cs1) (c2:cs2) = (c1 == c2) && cs1 `isPrefixOf` cs2
 
-hasPrefix :: String -> String -> Bool
-hasPrefix "" _ = False
-hasPrefix _ "" = True
+hasPrefix :: (Eq a) => [a] -> [a] -> Bool
+hasPrefix [] _ = False
+hasPrefix _ [] = True
 hasPrefix (c1:cs1) (c2:cs2) = (c1 == c2) && cs2 `hasPrefix` cs1
 
-splitStr :: String -> String -> [String]
-splitStr _ "" = []
-splitStr sub str = recSplit sub str [] []
+splitAtSeq :: (Eq a) => [a] -> [a] -> [[a]]
+splitAtSeq _ [] = []
+splitAtSeq sub str = splitAtSeq' sub str [] []
   where
-    recSplit _ "" subacc acc = reverse $ reverse subacc:acc
-    recSplit sub (c:cs) subacc acc
-      | sub `isPrefixOf` (c:cs) = recSplit sub (drop (length sub) (c:cs)) [] (reverse subacc:acc)
-      | otherwise               = recSplit sub cs (c:subacc) acc
+    splitAtSeq' _ [] subacc acc = reverse $ reverse subacc:acc
+    splitAtSeq' sub (c:cs) subacc acc
+      | sub `isPrefixOf` (c:cs) = splitAtSeq' sub (drop (length sub) (c:cs)) [] (reverse subacc:acc)
+      | otherwise               = splitAtSeq' sub cs (c:subacc) acc
 
 orderAndFilterEntries :: [String] -> [String]
-orderAndFilterEntries = map (unwords  . sort . filter (not . hasPrefix notRequired) . splitStr " ")
+orderAndFilterEntries = map (unwords  . sort . filter (not . hasPrefix notRequired) . splitAtSeq " ")
 
 parseEntryKeyValues :: String -> [(String, String)]
 parseEntryKeyValues s = do
-  let entries =  splitStr " " s
-  map (\e -> let [k,v] = splitStr ":" e in (k,v)) entries
+  let entries =  splitAtSeq " " s
+  map (\e -> let [k,v] = splitAtSeq ":" e in (k,v)) entries
 
 main :: IO ()
 main = do
     input <- readFile "input.txt"
-    let splitInputs = splitStr "\n\n" input
+    let splitInputs = splitAtSeq "\n\n" input
     let cleanedInputs = map (map (\c -> if c == '\n' then ' ' else c)) splitInputs
     let orderedAndFilteredEntries = orderAndFilterEntries cleanedInputs
     let entriesKeyValues = map parseEntryKeyValues orderedAndFilteredEntries
