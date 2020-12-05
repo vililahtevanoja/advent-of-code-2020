@@ -4,19 +4,19 @@ seatBinSearch :: String -> Int
 seatBinSearch [] = 0
 seatBinSearch (c:cs) = inner c cs
   where
-    inner 'F' "" = 0
-    inner 'L' "" = 0
-    inner 'B' "" = 1
-    inner 'R' "" = 1
+    inner 'F' ""     = 0
+    inner 'L' ""     = 0
+    inner 'B' ""     = 1
+    inner 'R' ""     = 1
     inner 'F' (c:cs) = inner c cs
     inner 'L' (c:cs) = inner c cs
     inner 'B' (c:cs) = (2 ^ length (c:cs)) + inner c cs
     inner 'R' (c:cs) = (2 ^ length (c:cs)) + inner c cs
-    inner _ _ = 0
+    inner _ _        = 0
 
 parseSeat :: String -> Seat
 parseSeat s =
-  let 
+  let
       rowInfoLength = 7
       columnInfoLength = 3
       columnCount = 8

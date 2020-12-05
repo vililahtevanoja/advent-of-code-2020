@@ -1,11 +1,11 @@
-import Data.Char
-import Text.ParserCombinators.ReadP
+import           Data.Char
+import           Text.ParserCombinators.ReadP
 
 data PwInfo = PwInfo
   { constraint1 :: Int,
     constraint2 :: Int,
-    letter :: Char,
-    pw :: String
+    letter      :: Char,
+    pw          :: String
   }
   deriving (Show)
 

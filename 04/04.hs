@@ -1,6 +1,6 @@
-import Data.List (sort)
-import Data.Char (isDigit, isHexDigit)
-import Text.Read (readMaybe)
+import           Data.Char (isDigit, isHexDigit)
+import           Data.List (sort)
+import           Text.Read (readMaybe)
 
 required :: [String]
 required =  sort ["byr", "iyr", "eyr", "hgt","hcl","ecl","pid"]
@@ -10,13 +10,13 @@ checkComplianceTuple (k,v) = checkCompliance k v
 
 checkCompliance :: String -> String -> Bool
 checkCompliance "byr" s = case (readMaybe s :: Maybe Int) of
-                            Just n -> n >= 1920 && n <= 2002
+                            Just n  -> n >= 1920 && n <= 2002
                             Nothing -> False
 checkCompliance "iyr" s = case (readMaybe s :: Maybe Int) of
-                            Just n -> n >= 2010 && n <= 2020
+                            Just n  -> n >= 2010 && n <= 2020
                             Nothing -> False
 checkCompliance "eyr" s = case (readMaybe s :: Maybe Int) of
-                            Just n -> n >= 2020 && n <= 2030
+                            Just n  -> n >= 2020 && n <= 2030
                             Nothing -> False
 checkCompliance "hgt" s | unit == "cm"  = value >= 150 && value <= 193
                         | unit == "in" = value >= 59 && value <= 76
@@ -32,13 +32,13 @@ checkCompliance "cid" _ = True -- ignore
 checkCompliance k s = error ("Weird values: " ++ k ++ ":" ++ s)
 
 isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
-isPrefixOf [] _ = True
-isPrefixOf _ [] = False
+isPrefixOf [] _              = True
+isPrefixOf _ []              = False
 isPrefixOf (c1:cs1) (c2:cs2) = (c1 == c2) && cs1 `isPrefixOf` cs2
 
 hasPrefix :: (Eq a) => [a] -> [a] -> Bool
-hasPrefix [] _ = False
-hasPrefix _ [] = True
+hasPrefix [] _              = False
+hasPrefix _ []              = True
 hasPrefix (c1:cs1) (c2:cs2) = (c1 == c2) && cs2 `hasPrefix` cs1
 
 splitAtSeq :: (Eq a) => [a] -> [a] -> [[a]]
