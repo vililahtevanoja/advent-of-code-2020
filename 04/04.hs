@@ -39,27 +39,28 @@ hasPrefix [] _              = False
 hasPrefix _ []              = True
 hasPrefix (c1:cs1) (c2:cs2) = (c1 == c2) && cs2 `hasPrefix` cs1
 
-splitAtSeq :: (Eq a) => [a] -> [a] -> [[a]]
-splitAtSeq _ [] = []
-splitAtSeq sub str = splitAtSeq' sub str [] []
+-- split at sub-sequence, excluding the sub-sequence from split results
+splitAtSubSeqExcl :: (Eq a) => [a] -> [a] -> [[a]]
+splitAtSubSeqExcl _ [] = []
+splitAtSubSeqExcl sub seq = splitAtSubSeqExcl' sub seq [] []
   where
-    splitAtSeq' _ [] subacc acc = reverse $ reverse subacc:acc
-    splitAtSeq' sub (c:cs) subacc acc
-      | sub `isPrefixOf` (c:cs) = splitAtSeq' sub (drop (length sub) (c:cs)) [] (reverse subacc:acc)
-      | otherwise               = splitAtSeq' sub cs (c:subacc) acc
+    splitAtSubSeqExcl' _ [] subacc acc = reverse $ reverse subacc:acc
+    splitAtSubSeqExcl' sub (x:xs) subacc acc
+      | sub `isPrefixOf` (x:xs) = splitAtSubSeqExcl' sub (drop (length sub - 1) xs) [] (reverse subacc:acc)
+      | otherwise               = splitAtSubSeqExcl' sub xs (x:subacc) acc
 
 orderAndFilterEntries :: [String] -> [String]
-orderAndFilterEntries = map (unwords  . sort . filter (not . hasPrefix notRequired) . splitAtSeq " ")
+orderAndFilterEntries = map (unwords  . sort . filter (not . hasPrefix notRequired) . splitAtSubSeqExcl " ")
 
 parseEntryKeyValues :: String -> [(String, String)]
 parseEntryKeyValues s = do
-  let entries =  splitAtSeq " " s
-  map (\e -> let [k,v] = splitAtSeq ":" e in (k,v)) entries
+  let entries =  splitAtSubSeqExcl " " s
+  map (\e -> let [k,v] = splitAtSubSeqExcl ":" e in (k,v)) entries
 
 main :: IO ()
 main = do
     input <- readFile "input.txt"
-    let splitInputs = splitAtSeq "\n\n" input
+    let splitInputs = splitAtSubSeqExcl "\n\n" input
     let cleanedInputs = map (map (\c -> if c == '\n' then ' ' else c)) splitInputs
     let orderedAndFilteredEntries = orderAndFilterEntries cleanedInputs
     let entriesKeyValues = map parseEntryKeyValues orderedAndFilteredEntries

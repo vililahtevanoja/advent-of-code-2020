@@ -6,27 +6,29 @@ isPrefixOf [] _          = True
 isPrefixOf _ []          = False
 isPrefixOf (x:xs) (y:ys) = (x == y) && xs `isPrefixOf` ys
 
-splitAtSubSeq :: (Eq a) => [a] -> [a] -> [[a]]
-splitAtSubSeq _ [] = []
-splitAtSubSeq sub seq = splitAtSubSeq' sub seq [] []
+-- split at sub-sequence, excluding the sub-sequence from split results
+splitAtSubSeqExcl :: (Eq a) => [a] -> [a] -> [[a]]
+splitAtSubSeqExcl _ [] = []
+splitAtSubSeqExcl sub seq = splitAtSubSeqExcl' sub seq [] []
   where
-    splitAtSubSeq' _ [] subacc acc = reverse $ reverse subacc:acc
-    splitAtSubSeq' sub (x:xs) subacc acc
-      | sub `isPrefixOf` (x:xs) = splitAtSubSeq' sub (drop (length sub - 1) xs) [] (reverse subacc:acc)
-      | otherwise               = splitAtSubSeq' sub xs (x:subacc) acc
+    splitAtSubSeqExcl' _ [] subacc acc = reverse $ reverse subacc:acc
+    splitAtSubSeqExcl' sub (x:xs) subacc acc
+      | sub `isPrefixOf` (x:xs) = splitAtSubSeqExcl' sub (drop (length sub - 1) xs) [] (reverse subacc:acc)
+      | otherwise               = splitAtSubSeqExcl' sub xs (x:subacc) acc
 
-splitAtExclusive :: (Eq a) => a -> [a] -> [[a]]
-splitAtExclusive el = splitAtSubSeq [el]
+-- split at element, exluding the element from split results
+splitAtExcl :: (Eq a) => a -> [a] -> [[a]]
+splitAtExcl el = splitAtSubSeqExcl [el]
 
 solve1 :: String -> Int
 solve1 inputs = do
-  let groups =  map (splitAtExclusive '\n') $ splitAtSubSeq "\n\n" inputs
+  let groups =  map (splitAtExcl '\n') $ splitAtSubSeqExcl "\n\n" inputs
   let groupUnions = map (foldl1 union) groups
   sum $ map length groupUnions
 
 solve2 :: String -> Int
 solve2 inputs = do
-  let groups = map (splitAtExclusive '\n') $ splitAtSubSeq "\n\n" inputs
+  let groups = map (splitAtExcl '\n') $ splitAtSubSeqExcl "\n\n" inputs
   let groupIntersections = map (foldl1 intersect) groups
   sum $ map length groupIntersections
 
