@@ -1,5 +1,5 @@
 
-import           Data.List (intersect, nub)
+import           Data.List (intersect, union)
 
 isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
 isPrefixOf [] _          = True
@@ -16,20 +16,13 @@ splitAtSubSeq sub seq = splitAtSubSeq' sub seq [] []
       | otherwise               = splitAtSubSeq' sub xs (x:subacc) acc
 
 splitAtExclusive :: (Eq a) => a -> [a] -> [[a]]
-splitAtExclusive _ [] = []
-splitAtExclusive el seq = splitAtExclusive' el seq [] []
-  where
-    splitAtExclusive' _ [] subacc acc = reverse $ reverse subacc:acc
-    splitAtExclusive' el (x:xs) subacc acc
-      | el == x    = splitAtExclusive' el xs [] (reverse subacc:acc)
-      | otherwise = splitAtExclusive' el xs (x:subacc) acc
+splitAtExclusive el = splitAtSubSeq [el]
 
 solve1 :: String -> Int
 solve1 inputs = do
-  let groups =  map (filter ('\n' /= )) $ splitAtSubSeq "\n\n" inputs
-  let nubbed = map nub groups
-  let questionsAnsweredPerGroup = map length nubbed
-  sum questionsAnsweredPerGroup
+  let groups =  map (splitAtExclusive '\n') $ splitAtSubSeq "\n\n" inputs
+  let groupUnions = map (foldl1 union) groups
+  sum $ map length groupUnions
 
 solve2 :: String -> Int
 solve2 inputs = do
