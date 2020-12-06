@@ -9,5 +9,6 @@ RUN useradd -ms /bin/zsh vscodeuser
 USER vscodeuser
 WORKDIR /home/vscodeuser
 RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+RUN export GOPATH=/home/vscodeuser/go
 RUN echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 RUN sed -i 's/ZSH_THEME.*/ZSH_THEME="Soliah"/' ~/.zshrc
