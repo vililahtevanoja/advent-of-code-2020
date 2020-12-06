@@ -2,38 +2,38 @@
 import           Data.List (intersect, nub)
 
 isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
-isPrefixOf [] _              = True
-isPrefixOf _ []              = False
-isPrefixOf (c1:cs1) (c2:cs2) = (c1 == c2) && cs1 `isPrefixOf` cs2
+isPrefixOf [] _          = True
+isPrefixOf _ []          = False
+isPrefixOf (x:xs) (y:ys) = (x == y) && xs `isPrefixOf` ys
 
-splitAtSeq :: (Eq a) => [a] -> [a] -> [[a]]
-splitAtSeq _ [] = []
-splitAtSeq sub str = splitAtSeq' sub str [] []
+splitAtSubSeq :: (Eq a) => [a] -> [a] -> [[a]]
+splitAtSubSeq _ [] = []
+splitAtSubSeq sub seq = splitAtSubSeq' sub seq [] []
   where
-    splitAtSeq' _ [] subacc acc = reverse $ reverse subacc:acc
-    splitAtSeq' sub (c:cs) subacc acc
-      | sub `isPrefixOf` (c:cs) = splitAtSeq' sub (drop (length sub) (c:cs)) [] (reverse subacc:acc)
-      | otherwise               = splitAtSeq' sub cs (c:subacc) acc
+    splitAtSubSeq' _ [] subacc acc = reverse $ reverse subacc:acc
+    splitAtSubSeq' sub (x:xs) subacc acc
+      | sub `isPrefixOf` (x:xs) = splitAtSubSeq' sub (drop (length sub - 1) xs) [] (reverse subacc:acc)
+      | otherwise               = splitAtSubSeq' sub xs (x:subacc) acc
 
 splitAtExclusive :: (Eq a) => a -> [a] -> [[a]]
 splitAtExclusive _ [] = []
 splitAtExclusive el seq = splitAtExclusive' el seq [] []
   where
     splitAtExclusive' _ [] subacc acc = reverse $ reverse subacc:acc
-    splitAtExclusive' el (c:cs) subacc acc
-      | el == c    = splitAtExclusive' el cs [] (reverse subacc:acc)
-      | otherwise = splitAtExclusive' el cs (c:subacc) acc
+    splitAtExclusive' el (x:xs) subacc acc
+      | el == x    = splitAtExclusive' el xs [] (reverse subacc:acc)
+      | otherwise = splitAtExclusive' el xs (x:subacc) acc
 
 solve1 :: String -> Int
 solve1 inputs = do
-  let groups =  map (filter ('\n' /= )) $ splitAtSeq "\n\n" inputs
+  let groups =  map (filter ('\n' /= )) $ splitAtSubSeq "\n\n" inputs
   let nubbed = map nub groups
   let questionsAnsweredPerGroup = map length nubbed
   sum questionsAnsweredPerGroup
 
 solve2 :: String -> Int
 solve2 inputs = do
-  let groups = map (splitAtExclusive '\n') $ splitAtSeq "\n\n" inputs
+  let groups = map (splitAtExclusive '\n') $ splitAtSubSeq "\n\n" inputs
   let groupIntersections = map (foldl1 intersect) groups
   sum $ map length groupIntersections
 
