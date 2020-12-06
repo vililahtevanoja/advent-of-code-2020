@@ -21,10 +21,19 @@ splitAtExcl :: (Eq a) => a -> [a] -> [[a]]
 splitAtExcl el = splitAtSubSeqExcl [el]
 
 solve1 :: String -> Int
-solve1 inputs = do
-  let groups =  map (splitAtExcl '\n') $ splitAtSubSeqExcl "\n\n" inputs
-  let groupUnions = map (foldl1 union) groups
-  sum $ map length groupUnions
+solve1 inputs =
+  let
+    groups =  map (splitAtExcl '\n') $ splitAtSubSeqExcl "\n\n" inputs
+    groupUnions = map (foldl1 union) groups
+  in sum $ map length groupUnions
+
+solve1AltForm :: String -> Int
+solve1AltForm inputs = sum $ map length groupUnions
+  where
+    groupUnions = map (foldl1 union) groups
+      where
+        groups = map (splitAtExcl '\n') $ splitAtSubSeqExcl "\n\n" inputs
+
 
 solve2 :: String -> Int
 solve2 inputs = do
