@@ -19,7 +19,7 @@ data Instruction = Instruction {
 instructionP :: ReadP Instruction
 instructionP = do
   operator <- munch isAlpha
-  string " "
+  _ <- string " "
   sign <- count 1 $ satisfy (\c -> c == '-' || c == '+')
   argument <- munch isDigit
   return (Instruction (toOp operator) (read (minusOrEmpty sign ++ argument) :: Int))
@@ -36,7 +36,13 @@ getNopJmpPositions :: [(Int, Instruction)] -> [Int]
 getNopJmpPositions inss = map fst $ filter (\(_,ins) -> op ins == Nop || op ins == Jmp) inss
 
 transformNthElem :: (a -> a) -> Int -> [a] -> [a]
-transformNthElem f n xs = take n xs ++ [f(xs!!n)] ++ drop (n+1) xs
+transformNthElem f n xs =
+  if n < length xs
+    then take n xs ++ replacement ++ drop (n+1) xs
+    else xs
+  where replacement = case drop n xs of
+          x:_ -> [f x]
+          []  -> []
 
 getInstructionFlipPermutations :: [Int] -> [(Int, Instruction)] -> [[(Int, Instruction)]]
 getInstructionFlipPermutations ps inss = map (\p -> transformNthElem flipNopJmp p inss) ps
@@ -48,9 +54,10 @@ getAccValue instructions = getAccValue' [] 0 0
     getAccValue' visits acc idx
       | idx `notElem` visits =
         case lookup idx instructions of
-          Just ins | op ins == Acc -> getAccValue' (idx:visits) (acc + arg ins) (idx+1)
-          Just ins | op ins == Jmp -> getAccValue' (idx:visits) acc (idx+arg ins)
-          Just ins | op ins == Nop -> getAccValue' (idx:visits) acc (idx+1)
+          Just (Instruction Acc a) -> getAccValue' (idx:visits) (acc + a) (idx+1)
+          Just (Instruction Jmp a) -> getAccValue' (idx:visits) acc (idx+a)
+          Just (Instruction Nop _) -> getAccValue' (idx:visits) acc (idx+1)
+          Just (Instruction _ _) -> acc
           Nothing -> acc
       | otherwise = acc -- second visit of item
 
