@@ -12,3 +12,5 @@ RUN sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/inst
 RUN export GOPATH=/home/vscodeuser/go
 RUN echo 'PATH=$PATH:/usr/local/go/bin' >> ~/.zshrc
 RUN sed -i 's/ZSH_THEME.*/ZSH_THEME="Soliah"/' ~/.zshrc
+RUN touch ~/.ghc/ghci.conf
+RUN echo ':set -Wall' >> ~/.ghc/ghci.conf
