@@ -13,12 +13,12 @@ p1Idx = None
 for i, val in enumerate(values[preamble:]):
     relevantValues = values[i:i+preamble]
     perms = permutations(relevantValues, 2)
-    isSumOfTwo = False
+    isValid = False
     for perm in perms:
-        if val == sum(perm):
-            isSumOfTwo = True
+        if val == sum(perm) and perm[0] != perm[1]:
+            isValid = True
             break
-    if not isSumOfTwo:
+    if not isValid:
         p1 = val
         p1Idx = i+preamble
         break
