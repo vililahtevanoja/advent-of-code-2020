@@ -48,4 +48,4 @@ sevenFactors = [n for n in perm_lengths if n == 3]
 twoFactorsPart = 2 ** sum(twoFactors)
 sevenFactorsPart = 7 ** len(sevenFactors)
 result = twoFactorsPart*sevenFactorsPart
-print("Part 2: ",twoFactorsPart, "*", sevenFactorsPart, "=", result)
+print("Part 2: ", result, "(",twoFactorsPart, "*", sevenFactorsPart, ")")
