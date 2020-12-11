@@ -1,13 +1,14 @@
+import           Data.List  (find)
 import           Data.Maybe (fromMaybe)
 import           Text.Read  (readMaybe)
 
-findP1 :: Int -> [Int] -> (Int, [Int])
+findP1 :: Int -> [Int] -> (Int, Int, [Int])
 findP1 preamble ns = findP1' preamble
   where
-    findP1' :: Int -> (Int, [Int])
+    findP1' :: Int -> (Int, Int, [Int])
     findP1' idx
-      | idx >= length ns = (-1, [])
-      | notValid (ns!!idx) workSet = (ns!!idx, workSet)
+      | idx >= length ns = error "wtf"
+      | notValid (ns!!idx) workSet = (idx, ns!!idx, workSet)
       | otherwise = findP1' (idx+1)
       where
           workSet = precedingFromN idx preamble ns
@@ -28,11 +29,22 @@ subsequencesN n xs = if n > len then [] else subsequencesN' xs !! (len-n)
    subsequencesN' (x:xs) = zipWith (++) ([]:next) (map (map (x:)) next ++ [[]])
     where next = subsequencesN' xs
 
+windows :: Int -> [Int] -> [[Int]]
+windows l xs = map (\i -> take l $ drop i xs) [0..length xs-l]
+
+findP2 :: Int -> Int -> [Int] -> Int
+findP2 p1 p1Idx xs = subSeqSum $ reverse [2..p1Idx]
+  where
+    subSeqSum :: [Int] -> Int
+    subSeqSum seqLengths = head $ map (\seq -> minimum seq + maximum seq) $ filter (\seq -> sum seq == p1 ) $ concatMap (`windows` xs) seqLengths
+
 main :: IO ()
 main = do
   inputs <- lines <$> readFile "input.txt"
   let preamble = 25
   let values = map (\s -> fromMaybe (-1) (readMaybe s :: Maybe Int)) inputs
-  let p1 = findP1 preamble values
-  putStrLn $ "Part 1: " ++ show (fst p1)
+  let (p1Idx, p1, _) = findP1 preamble values
+  putStrLn $ "Part 1: " ++ show p1
 
+  let p2 = findP2 p1 p1Idx values
+  putStrLn $ "Part 2: " ++ show p2

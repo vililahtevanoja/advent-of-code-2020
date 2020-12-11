@@ -31,7 +31,7 @@ for setLen in range(2, p1Idx):
         ns = values[i:i+setLen]
         if sum(ns) == p1:
             p2 = min(ns) + max(ns)
-    if p2:
-        break
+        if p2:
+            break
 
 print("Part 2: ", p2)
